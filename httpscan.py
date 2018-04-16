@@ -35,42 +35,39 @@ class scan():
         # print cidr
         # self.IPs.put(cidr)  # 把IP写入队列
 
+        self.ports = port.split(',')
+
     def request(self):
         while self.IPs.qsize() > 0:
             ip = self.IPs.get()
-            # print ip
-            if (self.port):
-                str_port = ":" + str(self.port)
-            else:
-                str_port = ""
-            url = 'http://' + str(ip) + str(str_port)
-            print url
-            try:
-                r = requests.Session().get(url, headers=header, timeout=TimeOut)
-            except:
-                continue
-            r.coding = 'utf-8'
+            for p in self.ports:
 
-            status = r.status_code
-            soup = BeautifulSoup(r.content, 'html.parser')
-            if soup.title is None:
-                title = 'None'
-            else:
-                title = soup.title.get_text()
+                url = 'http://' + str(ip) + ":" +str(p)
+                print url
+                try:
+                    r = requests.Session().get(url, headers=header, timeout=TimeOut)
+                except:
+                    continue
+                r.coding = 'utf-8'
 
-            try:
-                banner = r.headers['Server']  # get the server banner
-            except:
-                banner = 'None'
+                status = r.status_code
+                soup = BeautifulSoup(r.content, 'html.parser')
+                if soup.title is None:
+                    title = 'None'
+                else:
+                    title = soup.title.get_text()
 
+                try:
+                    banner = r.headers['Server']  # get the server banner
+                except:
+                    banner = 'None'
 
-            # Save log
-            print "|%-16s|%-6s|%-20s|%-30s|" % (ip, status, banner, title)
-            print "+----------------+------+--------------------+------------------------------+"
-            log_str = "IP:%s stats:%s server:%s title:%s" % (ip, status, banner, title)
-            with open("./log/" + IP(self.ip1).strNormal(3) + ".log", 'a') as f:
-                f.write(log_str.encode('utf-8') + "\n")
-
+                # Save log
+                print "|%-16s|%-6s|%-20s|%-30s|" % (ip, status, banner, title)
+                print "+----------------+------+--------------------+------------------------------+"
+                log_str = "IP:%s stats:%s server:%s title:%s" % (ip, status, banner, title)
+                with open("./log/" + IP(self.ip1).strNormal(3) + ".log", 'a') as f:
+                    f.write(log_str.encode('utf-8') + "\n")
 
 
 if __name__ == "__main__":
