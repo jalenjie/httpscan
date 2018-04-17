@@ -11,7 +11,6 @@ from IPy import IP
 import iplist
 from bs4 import BeautifulSoup
 
-printLock = threading.Semaphore(4)  # lock Screen print
 TimeOut = 5  # request timeout
 
 # User-Agent
@@ -42,7 +41,8 @@ class scan():
             ip = self.IPs.get()
             for p in self.ports:
 
-                url = 'http://' + str(ip) + ":" +str(p)
+                str_ip = str(ip) + ":" +str(p)
+                url = 'http://' + str_ip
                 print url
                 try:
                     r = requests.Session().get(url, headers=header, timeout=TimeOut)
@@ -63,9 +63,10 @@ class scan():
                     banner = 'None'
 
                 # Save log
+
                 print "|%-16s|%-6s|%-20s|%-30s|" % (ip, status, banner, title)
                 print "+----------------+------+--------------------+------------------------------+"
-                log_str = "IP:%s stats:%s server:%s title:%s" % (ip, status, banner, title)
+                log_str = "IP:%s stats:%s server:%s title:%s" % (str_ip, status, banner, title)
                 with open("./log/" + IP(self.ip1).strNormal(3) + ".log", 'a') as f:
                     f.write(log_str.encode('utf-8') + "\n")
 
